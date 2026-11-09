@@ -1,4 +1,4 @@
-#ífndef Defstruct
+#ifndef Defstruct
 #define Defstruct
 
 
@@ -28,13 +28,13 @@ typedef struct
 	char název_autora[50];
 	char žánr[50];
 	int počet_stran;
-	struct datum datum_vydání;
+	Datum datum_vydání;
 	Status status;
 	char Rezrevováno[50];
-	datum Rezervovano_pro_den;
+	Datum Rezervovano_pro_den;
 	char výpůjčeno[50];
-	datum vypůjčeno_od;
-	datum vypůjčeno_do;
+	Datum vypůjčeno_od;
+	Datum vypůjčeno_do;
 } Kniha;
 
 #endif // Defsturct

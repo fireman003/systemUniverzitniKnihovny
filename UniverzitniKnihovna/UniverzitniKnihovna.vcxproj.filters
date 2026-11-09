@@ -4,10 +4,21 @@
     <Filter Include="src">
       <UniqueIdentifier>{e715e420-8e7b-4b62-b0b2-f46dcddf4fa6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\UI">
+      <UniqueIdentifier>{20418750-002b-4292-ba98-7ace90306ab0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="main.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="ui.c">
+      <Filter>src\UI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ui.h">
+      <Filter>src\UI</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
