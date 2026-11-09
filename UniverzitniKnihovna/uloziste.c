@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include "uloziste.h"
 
-int uloz_knihy(Kniha pole_knih[], int pocet_knih, const char* nazev_souboru) {
+int uloz_knihy(Kniha pole_knih[], int pocet_knih, const char* nazev_souboru) 
+{
     FILE* soubor = fopen(nazev_souboru, "w");
 
     if (soubor == NULL) 
@@ -27,5 +28,7 @@ int uloz_knihy(Kniha pole_knih[], int pocet_knih, const char* nazev_souboru) {
     
     fclose(soubor);
 
+
     printf("INFO: Uspesne ulozeno %d knih do souboru '%s'.\n", pocet_knih, nazev_souboru);
     return 1;
+}
