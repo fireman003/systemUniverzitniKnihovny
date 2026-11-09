@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="UniverzitniKnihovna/UniverzitniKnihovna.vcxproj" />
+  <Project Path="UniverzitniKnihovna/UniverzitniKnihovna.vcxproj" Id="61d98f6f-ff3e-489b-a0d5-8a9579b24eec" />
 </Solution>
