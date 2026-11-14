@@ -37,4 +37,24 @@ typedef struct
 	Datum vypůjčeno_do;
 } Kniha;
 
+typedef struct
+{
+	int ID;
+	char jméno[50];
+	char příjmení[50];
+	char email[50];
+	int telefon;
+	Kniha vypůjčené_knihy[100];
+	Kniha rezervované_knihy[100];
+}Čtenář;
+
+typedef struct
+{
+	int ID;
+	char jméno[50];
+	char příjmení[50];
+	char email[50];
+	int telefon;
+} Knihovník;
+
 #endif // Defsturct
