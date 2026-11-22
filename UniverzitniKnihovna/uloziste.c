@@ -5,13 +5,16 @@
 #include "Header1.h"
 
 
+
+//knihy
+
 int uloz_knihy(Kniha pole_knih[], int pocet_knih) 
 {
 
     FILE *fptr = fopen("knihy.txt", "w");
     if (fptr ==NULL) 
     {
-        printf("CHYBA: Nepodarilo se otevrit soubor '%s' pro zapis\n", nazev_souboru);
+        printf("CHYBA: Nepodarilo se otevrit soubor '%s' pro zapis\n", "knihy.txt");
         return 0;
     }
 
@@ -63,10 +66,10 @@ int uloz_knihy(Kniha pole_knih[], int pocet_knih)
 
 int nacti_knihy(Kniha pole_knih[])
 {
-    FILE *fptr = fopen(nazev_souboru, "r");
+    FILE *fptr = fopen("knihy.txt", "r");
     if (fptr == NULL) 
     {
-        printf("CHYBA: Nepodarilo se otevrit soubor '%s' pro cteni\n", nazev_souboru);
+        printf("CHYBA: Nepodarilo se otevrit soubor '%s' pro cteni\n", "knihy.txt");
         return 0;
     }
 
@@ -105,5 +108,146 @@ int nacti_knihy(Kniha pole_knih[])
 
     fclose(fptr);
     printf("Ze souboru bylo nacteno %d knih.\n", i);
+    return i;
+}
+
+
+
+
+//knihovnici
+
+int uloz_knihovniky(Knihovník pole_knihovniku[], int pocet_knihovniku)
+{
+    FILE* fptr = fopen("knihovnici.txt", "w");
+    if (fptr == NULL)
+    {
+        printf("CHYBA: Nepodarilo se otevrit soubor 'knihovnici.txt' pro zapis\n");
+        return 0;
+    }
+
+    for (int i = 0; i < pocet_knihovniku; i++)
+    {
+        fprintf(fptr, "%d;%s;%s;%s;%d\n",
+            pole_knihovniku[i].ID,
+            pole_knihovniku[i].jméno,
+            pole_knihovniku[i].příjmení,
+            pole_knihovniku[i].email,
+            pole_knihovniku[i].telefon
+        );
+    }
+
+    fclose(fptr);
+    printf("Knihovnici ulozeni\n");
+    return 1;
+}
+
+int nacti_knihovniky(Knihovník pole_knihovniku[])
+{
+     FILE* fptr = fopen("knihovnici.txt", "r");
+        if (fptr == NULL)
+        {
+        printf("CHYBA: Nepodarilo se otevrit soubor 'knihovnici.txt' pro cteni\n");
+        return 0;
+    }
+
+    int i = 0;
+    while (fscanf(fptr, "%d;%49[^;];%49[^;];%49[^;];%d\n",
+        &pole_knihovniku[i].ID,
+        pole_knihovniku[i].jméno,
+        pole_knihovniku[i].příjmení,
+        pole_knihovniku[i].email,
+        &pole_knihovniku[i].telefon) == 5)
+    {
+        i++;
+    }
+
+    fclose(fptr);
+    printf("Ze souboru bylo nacteno %d knihovniku.\n", i);
+    return i;
+}
+
+
+
+
+//ctenari
+
+int uloz_ctenare(Čtenář pole_ctenaru[], int pocet_ctenaru)
+{
+    FILE* fptr = fopen("ctenari.txt", "w");
+    if (fptr == NULL)
+    {
+         printf("CHYBA: Nepodarilo se otevrit soubor 'ctenari.txt' pro zapis\n");
+        return 0;
+    }
+
+    for (int i = 0; i < pocet_ctenaru; i++)
+    {
+        
+        fprintf(fptr, "%d;%s;%s;%s;%d\n",
+            pole_ctenaru[i].ID,
+            pole_ctenaru[i].jméno,
+            pole_ctenaru[i].příjmení,
+            pole_ctenaru[i].email,
+            pole_ctenaru[i].telefon
+        );
+
+        
+        for (int j = 0; j < 100; j++)
+        {
+            fprintf(fptr, "%d ", pole_ctenaru[i].vypůjčené_knihy[j].ID);
+        }
+        fprintf(fptr, "\n");
+
+        for (int j = 0; j < 100; j++)
+        {
+            fprintf(fptr, "%d ", pole_ctenaru[i].rezervované_knihy[j].ID);
+        }
+        fprintf(fptr, "\n");
+    }
+
+    fclose(fptr);
+    printf("Ctenari ulozeni\n");
+    return 1;
+}
+
+
+
+
+int nacti_ctenare(Čtenář pole_ctenaru[])
+{
+    FILE* fptr = fopen("ctenari.txt", "r");
+    if (fptr == NULL)
+    {
+        printf("CHYBA: Nepodarilo se otevrit soubor 'ctenari.txt' pro cteni\n");
+        return 0;
+    }
+
+    int i = 0;
+
+    
+    while (fscanf(fptr, "%d;%49[^;];%49[^;];%49[^;];%d\n",
+        &pole_ctenaru[i].ID,
+        pole_ctenaru[i].jméno,
+        pole_ctenaru[i].příjmení,
+        pole_ctenaru[i].email,
+        &pole_ctenaru[i].telefon) == 5)
+    {
+        
+            for (int j = 0; j < 100; j++)
+        {
+            fscanf(fptr, "%d", &pole_ctenaru[i].vypůjčené_knihy[j].ID);
+        }
+
+       
+        for (int j = 0; j < 100; j++)
+        {
+            fscanf(fptr, "%d", &pole_ctenaru[i].rezervované_knihy[j].ID);
+        }
+
+        i++;
+    }
+
+    fclose(fptr);
+    printf("Ze souboru bylo nacteno %d ctenaru.\n", i);
     return i;
 }
