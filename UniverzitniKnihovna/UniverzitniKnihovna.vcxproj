@@ -128,10 +128,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.c" />
+    <ClCompile Include="scene.c" />
     <ClCompile Include="ui.c" />
     <ClCompile Include="uloziste.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Header1.h" />
+    <ClInclude Include="evidence.h" />
+    <ClInclude Include="scene.h" />
     <ClInclude Include="ui.h" />
     <ClInclude Include="uloziste.h" />
   </ItemGroup>
