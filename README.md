@@ -11,3 +11,5 @@ Vývojový deník
 16.11. - Filip Bobvoš - Pridanie diagramu celého programu spolu s diagramami jednotlivých úloh.
 
 17.11. - Jakub Lhota - upravení ukládání knih, aby to sedělo se strukturou od Honzy a přidání funkce na načtení uloženého souboru knih. Právě řeším jak přidat zbylé struktury na uložení. Problém byl napasování ukládání na jinou hlavičku.
+
+22.11. - Jakub Lhota - Přidání ukládání čtenářů a knihovníků, podle Honzovy hlavičky. Knihovníci se ukládají stejně jako knihy, akorát čtenářům se ukládá i ID vypujčených a rezervovaných knih. Teď čekám na další úpravu hlavičky abych přidal nové ukládání a načítání. Problém byl vymyslet ukládání ID těch rezervovaných a vypujčených knih.
