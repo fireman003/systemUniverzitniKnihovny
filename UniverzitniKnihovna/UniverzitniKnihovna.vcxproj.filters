@@ -7,6 +7,9 @@
     <Filter Include="src\UI">
       <UniqueIdentifier>{20418750-002b-4292-ba98-7ace90306ab0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\uloziste">
+      <UniqueIdentifier>{754fe0bd-9694-4dc4-827e-8a39ed3f09b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -15,10 +18,16 @@
     <ClCompile Include="ui.c">
       <Filter>src\UI</Filter>
     </ClCompile>
+    <ClCompile Include="uloziste.c">
+      <Filter>src\uloziste</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui.h">
       <Filter>src\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="uloziste.h">
+      <Filter>src\uloziste</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
