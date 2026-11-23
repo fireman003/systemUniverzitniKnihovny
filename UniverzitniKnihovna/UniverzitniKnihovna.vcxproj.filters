@@ -10,6 +10,9 @@
     <Filter Include="src\uloziste">
       <UniqueIdentifier>{754fe0bd-9694-4dc4-827e-8a39ed3f09b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\logika">
+      <UniqueIdentifier>{c528b092-0537-49a4-a73b-ac3b2328842a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -21,21 +24,28 @@
     <ClCompile Include="uloziste.c">
       <Filter>src\uloziste</Filter>
     </ClCompile>
-    <ClCompile Include="scene.c" />
+    <ClCompile Include="scene.c">
+      <Filter>src\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="evidence.c">
+      <Filter>src\logika</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui.h">
       <Filter>src\UI</Filter>
     </ClInclude>
-    <ClInclude Include="uloziste.h">
-      <Filter>src\uloziste</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header1.h" />
     <ClInclude Include="scene.h">
       <Filter>src\UI</Filter>
     </ClInclude>
     <ClInclude Include="evidence.h">
+      <Filter>src\logika</Filter>
+    </ClInclude>
+    <ClInclude Include="nastaveni.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\uloziste.h">
+      <Filter>src\uloziste</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

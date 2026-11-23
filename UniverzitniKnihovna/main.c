@@ -1,6 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "ui.h"
+#include "evidence.h"
+
+//testovaci UI itemy
+static const MenuItem HLAVNI_MENU[] = {
+    { "Přidat knihu", pridatKnihu, ROLE_ALL },
+    { "Hledat knihu", hledatKnihu, ROLE_ALL }
+};
 
 int main()
 {
@@ -12,8 +20,9 @@ int main()
     }
         
     //hlavni cyklus programu
-    while () {
-        
+    while (uiLogin(&s, NULL)){
+        uiRunMenu("Hlavní menu", HLAVNI_MENU, sizeof HLAVNI_MENU / sizeof HLAVNI_MENU[0],
+            "Odhlásit se", &s);
     }
         
 

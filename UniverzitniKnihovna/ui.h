@@ -2,6 +2,7 @@
 #define UI_H
 
 #include <stddef.h>
+#include "evidence.h"
 
 #define UI_FIELD_MAX       64
 #define UI_MAX_USERS       100
@@ -83,5 +84,9 @@ const char* uiRoleName(Role r);
 
 void uiRunMenu(const char* title, const MenuItem* items, size_t count,
     const char* backLabel, Session* s);
+
+
+void pridatKnihu(Session* s);
+void hledatKnihu(Session* s);
 
 #endif

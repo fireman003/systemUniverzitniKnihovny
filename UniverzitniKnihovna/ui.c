@@ -1,23 +1,14 @@
 #include "ui.h"
+#include "evidence.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifdef _WIN32
 #include <windows.h>
 #include <conio.h>
+
 #ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
 #define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
-#endif
-#else
-#include <termios.h>
-#include <unistd.h>
-#include <signal.h>
-#include <sys/ioctl.h>
-#include <sys/select.h>
-static struct termios gOrigTerm;
-static int gRawOn = 0;
 #endif
 
 #define C_RESET          "\x1b[0m"
@@ -58,21 +49,13 @@ static int  gEof = 0;
 
 static void termSize(int* cols, int* rows)
 {
-#ifdef _WIN32
     CONSOLE_SCREEN_BUFFER_INFO info;
     if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info)) {
         *cols = info.srWindow.Right - info.srWindow.Left + 1;
         *rows = info.srWindow.Bottom - info.srWindow.Top + 1;
         return;
     }
-#else
-    struct winsize ws;
-    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0 && ws.ws_col > 0) {
-        *cols = ws.ws_col;
-        *rows = ws.ws_row;
-        return;
-    }
-#endif
+
     * cols = 80;
     *rows = 24;
 }
@@ -101,44 +84,18 @@ void uiRestore(void)
 {
     printf(C_RESET CURSOR_SHOW "\x1b[2J\x1b[H");
     fflush(stdout);
-#ifndef _WIN32
-    if (gRawOn) {
-        tcsetattr(STDIN_FILENO, TCSANOW, &gOrigTerm);
-        gRawOn = 0;
-    }
-#endif
 }
-
-#ifndef _WIN32
-static void onSignal(int sig)
-{
-    (void)sig;
-    uiRestore();
-    _exit(1);
-}
-#endif
 
 void uiInit(void)
 {
-#ifdef _WIN32
+
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD mode;
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
     if (GetConsoleMode(out, &mode))
         SetConsoleMode(out, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
-#else
-    if (isatty(STDIN_FILENO) && tcgetattr(STDIN_FILENO, &gOrigTerm) == 0) {
-        struct termios raw = gOrigTerm;
-        raw.c_lflag &= ~(ICANON | ECHO);
-        raw.c_cc[VMIN] = 1;
-        raw.c_cc[VTIME] = 0;
-        tcsetattr(STDIN_FILENO, TCSANOW, &raw);
-        gRawOn = 1;
-    }
-    signal(SIGINT, onSignal);
-    signal(SIGTERM, onSignal);
-#endif
+
     atexit(uiRestore);
 }
 
@@ -147,32 +104,12 @@ int uiEof(void)
     return gEof;
 }
 
-#ifndef _WIN32
-static int readByte(int timeoutMs)
-{
-    unsigned char c;
-    if (timeoutMs >= 0) {
-        fd_set set;
-        struct timeval tv;
-        FD_ZERO(&set);
-        FD_SET(STDIN_FILENO, &set);
-        tv.tv_sec = 0;
-        tv.tv_usec = timeoutMs * 1000;
-        if (select(STDIN_FILENO + 1, &set, NULL, NULL, &tv) <= 0)
-            return -1;
-    }
-    if (read(STDIN_FILENO, &c, 1) != 1)
-        return -2;
-    return c;
-}
-#endif
-
 int uiGetKey(void)
 {
     fflush(stdout);
     if (gEof)
         return KEY_ESC;
-#ifdef _WIN32
+
     int c = _getch();
     if (c == 0 || c == 224) {
         switch (_getch()) {
@@ -190,33 +127,6 @@ int uiGetKey(void)
     case 9:  return KEY_TAB;
     }
     return c;
-#else
-    int c = readByte(-1);
-    if (c == -2) {
-        gEof = 1;
-        return KEY_ESC;
-    }
-    if (c == 27) {
-        int c2 = readByte(50);
-        if (c2 != '[' && c2 != 'O')
-            return KEY_ESC;
-        switch (readByte(50)) {
-        case 'A': return KEY_UP;
-        case 'B': return KEY_DOWN;
-        case 'C': return KEY_RIGHT;
-        case 'D': return KEY_LEFT;
-        default:  return KEY_NONE;
-        }
-    }
-    switch (c) {
-    case '\n':
-    case '\r': return KEY_ENTER;
-    case 127:
-    case 8:    return KEY_BACKSPACE;
-    case '\t': return KEY_TAB;
-    }
-    return c;
-#endif
 }
 
 void uiClear(void)
@@ -727,4 +637,58 @@ void uiRunMenu(const char* title, const MenuItem* items, size_t count,
         if (gEof)
             return;
     }
+}
+
+void pridatKnihu(Session* s)
+{
+    Kniha k = { 0 };
+    char rok[8] = "";
+    char zprava[100];
+    FormField pole[3] = {
+        { "Název",      k.nazev_knihy,  sizeof k.nazev_knihy,  FIELD_TEXT,   0 },
+        { "Autor",      k.nazev_autora, sizeof k.nazev_autora, FIELD_TEXT,   0 },
+        { "Rok vydání", rok,            sizeof rok,            FIELD_NUMBER, 0 }
+    };
+    (void)s;
+
+    if (!uiForm("Nová kniha", pole, 3, NULL))
+        return;
+    k.datum_vydani.rok = atoi(rok);
+
+    int id = pridej_knihu(&k);
+    if (id <= 0) {
+        uiError("Evidence knih je plná.");
+        return;
+    }
+    if (!evidence_uloz()) {
+        uiError("Kniha přidána, ale nepodařilo se ji uložit do souboru.");
+        return;
+    }
+
+    snprintf(zprava, sizeof zprava, "Kniha uložena pod ID %d.", id);
+    uiSuccess(zprava);
+}
+
+void hledatKnihu(Session* s)
+{
+    char text[50];
+    Kniha* nalez[20];
+    (void)s;
+
+    if (!uiReadText("Název nebo autor", text, sizeof text, 0))
+        return;
+
+    int n = hledej_knihy(text, nalez, 20);
+    if (n == 0) {
+        uiMessage("Hledání", "Kniha nebyla nalezena.");
+        return;
+    }
+
+    uiClear();
+    printf("  Nalezeno: %d\n\n", n);
+    for (int i = 0; i < n; i++)
+        printf("  %4d  %-30s %-20s %d  %s\n", nalez[i]->ID, nalez[i]->nazev_knihy,
+            nalez[i]->nazev_autora, nalez[i]->datum_vydani.rok,
+            nalez[i]->status == Vypujceno ? "vypůjčená" : "v knihovně");
+    uiPause();
 }

@@ -1,10 +1,16 @@
 #define EVIDENCE_H
 #ifdef EVIDENCE_H
 
-#include "../Header1.h"
+#include "../uloziste.h"
+#include "nastaveni.h"
+#include <stdio.h>
 
 int evidence_nacti(void);
 int evidence_uloz(void);
+
+
+extern Kniha knihy[MAX_KNIH];
+extern int   pocet_knih;
 
 // Knihy
 const char* kontrola_knihy(const Kniha* k);     // NULL = OK, jinak text chyby
