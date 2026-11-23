@@ -16,4 +16,4 @@ Vývojový deník
 
 22.11 - Marek Havel - Vytvoření hlavičkových souborů s metodami podle UML návrhu.
 
-23.11. - Marek Havel - Oprava syntaktických chyb v projektu. Odebrání diakritiky z názvů ve strukturách (hlásilo cca 150 chyb). Přejmenování Header1.h na uloziste.h a doplnění deklarací metod. Vytvoření nastaveni.h pro #define (název souboru knih, max. počet knih). Základní logika v mainu, program se poprvé spustí.
+23.11. - Marek Havel - Oprava syntaktických chyb v projektu. Odebrání diakritiky z názvů ve strukturách. Přejmenování Header1.h na uloziste.h a doplnění deklarací metod. Vytvoření nastaveni.h pro #define (název souboru knih, max. počet knih). Základní logika v mainu, program se poprvé spustí.
