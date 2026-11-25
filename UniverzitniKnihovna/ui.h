@@ -3,9 +3,9 @@
 
 #include <stddef.h>
 #include "evidence.h"
+#include "nastaveni.h"
 
 #define UI_FIELD_MAX       64
-#define UI_MAX_USERS       100
 #define UI_MAX_ATTEMPTS    3
 #define UI_MENU_MAX        32
 #define UI_FORBIDDEN_CHARS ";"
@@ -34,8 +34,8 @@ typedef enum {
 
 typedef struct {
     Role role;
-    int  readerId;
-    char username[UI_FIELD_MAX];
+    int  id;
+    char jmeno[110];
 } Session;
 
 typedef struct {
@@ -58,8 +58,6 @@ typedef struct {
     int optional;
 } FormField;
 
-typedef int (*RegisterReaderFn)(const char* fullName);
-
 void uiInit(void);
 void uiRestore(void);
 int  uiEof(void);
@@ -78,8 +76,7 @@ int  uiConfirm(const char* question);
 int  uiReadText(const char* prompt, char* buf, size_t size, int allowEmpty);
 int  uiReadInt(const char* prompt, int min, int max, int* out);
 
-int         uiLogin(Session* s, RegisterReaderFn registerReader);
-int         uiAddUser(const char* username, const char* password, Role role, int readerId);
+int uiLogin(Session* s);
 const char* uiRoleName(Role r);
 
 void uiRunMenu(const char* title, const MenuItem* items, size_t count,

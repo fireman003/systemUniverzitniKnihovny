@@ -36,12 +36,7 @@ typedef struct {
     int x, y, w, h;
 } Box;
 
-static User gUsers[UI_MAX_USERS] = {
-    { "knihovnik", "knihovna", ROLE_KNIHOVNIK, -1 },
-    { "vedouci",   "vedouci",  ROLE_VEDOUCI,   -1 },
-    { "admin",     "admin",    ROLE_SPRAVCE,   -1 },
-    { "ctenar",    "ctenar",   ROLE_CTENAR,     1 }
-};
+
 static int  gUserCount = 4;
 static int  gNextReaderId = 2;
 static char gStatus[160] = "";
@@ -475,119 +470,97 @@ const char* uiRoleName(Role r)
     }
 }
 
-static User* findUser(const char* username)
+static void nastavSession(Session* s, Role role, int id, const char* jmeno)
 {
-    for (int i = 0; i < gUserCount; i++)
-        if (strcmp(gUsers[i].username, username) == 0)
-            return &gUsers[i];
-    return NULL;
+    s->role = role;
+    s->id = id;
+    snprintf(s->jmeno, sizeof s->jmeno, "%s", jmeno);
+
+    if (role == ROLE_CTENAR)
+        snprintf(gStatus, sizeof gStatus, "Přihlášen: %s  |  Čtenář  |  ID %d", s->jmeno, id);
+    else
+        snprintf(gStatus, sizeof gStatus, "Přihlášen: %s  |  ID %d", uiRoleName(role), id);
 }
 
-int uiAddUser(const char* username, const char* password, Role role, int readerId)
+static int overId(Session* s, int id)
 {
-    if (gUserCount >= UI_MAX_USERS || findUser(username) != NULL)
+    char celeJmeno[110];
+    Ctenar* c;
+
+    switch (id) {
+    case ID_SPRAVCE:   nastavSession(s, ROLE_SPRAVCE, id, "Správce");   return 1;
+    case ID_VEDOUCI:   nastavSession(s, ROLE_VEDOUCI, id, "Vedoucí");   return 1;
+    case ID_KNIHOVNIK: nastavSession(s, ROLE_KNIHOVNIK, id, "Knihovník"); return 1;
+    }
+
+    c = najdi_ctenare(id);
+    if (c == NULL)
         return 0;
 
-    User* u = &gUsers[gUserCount++];
-    snprintf(u->username, sizeof u->username, "%s", username);
-    snprintf(u->password, sizeof u->password, "%s", password);
-    u->role = role;
-    u->readerId = readerId;
+    snprintf(celeJmeno, sizeof celeJmeno, "%s %s", c->jmeno, c->prijmeni);
+    nastavSession(s, ROLE_CTENAR, id, celeJmeno);
     return 1;
-}
-
-static void setSession(Session* s, const User* u)
-{
-    s->role = u->role;
-    s->readerId = u->readerId;
-    snprintf(s->username, sizeof s->username, "%s", u->username);
-
-    if (u->role == ROLE_CTENAR)
-        snprintf(gStatus, sizeof gStatus, "Přihlášen: %s  |  %s č. %d",
-            u->username, uiRoleName(u->role), u->readerId);
-    else
-        snprintf(gStatus, sizeof gStatus, "Přihlášen: %s  |  %s",
-            u->username, uiRoleName(u->role));
 }
 
 static int loginScreen(Session* s)
 {
-    char name[UI_FIELD_MAX] = "", pass[UI_FIELD_MAX] = "", err[96] = "";
-    FormField f[2] = {
-        { "Uživatelské jméno", name, sizeof name, FIELD_TEXT,     0 },
-        { "Heslo",             pass, sizeof pass, FIELD_PASSWORD, 0 }
-    };
+    char idText[10] = "";
+    char err[96] = "";
+    FormField f = { "Vaše ID", idText, sizeof idText, FIELD_NUMBER, 0 };
 
-    for (int attempt = 1; ; attempt++) {
-        if (!uiForm("Přihlášení", f, 2, err[0] ? err : NULL))
+    for (int pokus = 1; ; pokus++) {
+        if (!uiForm("Přihlášení", &f, 1, err[0] ? err : NULL))
             return 0;
 
-        User* u = findUser(name);
-        if (u != NULL && strcmp(u->password, pass) == 0) {
-            setSession(s, u);
+        if (overId(s, atoi(idText)))
             return 1;
-        }
-        if (attempt >= UI_MAX_ATTEMPTS) {
+
+        if (pokus >= UI_MAX_ATTEMPTS) {
             uiError("Příliš mnoho neúspěšných pokusů.");
             return 0;
         }
-        pass[0] = '\0';
-        snprintf(err, sizeof err, "Špatné jméno nebo heslo (pokus %d/%d)",
-            attempt, UI_MAX_ATTEMPTS);
+        idText[0] = '\0';
+        snprintf(err, sizeof err, "Neznámé ID (pokus %d/%d)", pokus, UI_MAX_ATTEMPTS);
     }
 }
 
-static int registerScreen(Session* s, RegisterReaderFn registerReader)
+static int registerScreen(Session* s)
 {
-    char full[UI_FIELD_MAX] = "", name[UI_FIELD_MAX] = "";
-    char pass[UI_FIELD_MAX] = "", pass2[UI_FIELD_MAX] = "";
-    char err[128] = "";
+    Ctenar c = { 0 };
+    char telefon[10] = "";
+    char zprava[160];
     FormField f[4] = {
-        { "Jméno a příjmení",  full,  sizeof full,  FIELD_TEXT,     0 },
-        { "Uživatelské jméno", name,  sizeof name,  FIELD_TEXT,     0 },
-        { "Heslo",             pass,  sizeof pass,  FIELD_PASSWORD, 0 },
-        { "Heslo znovu",       pass2, sizeof pass2, FIELD_PASSWORD, 0 }
+        { "Jméno",    c.jmeno,    sizeof c.jmeno,    FIELD_TEXT,   0 },
+        { "Příjmení", c.prijmeni, sizeof c.prijmeni, FIELD_TEXT,   0 },
+        { "E-mail",   c.email,    sizeof c.email,    FIELD_TEXT,   1 },
+        { "Telefon",  telefon,    sizeof telefon,    FIELD_NUMBER, 1 }
     };
 
-    for (;;) {
-        if (!uiForm("Registrace čtenáře", f, 4, err[0] ? err : NULL))
-            return 0;
+    if (!uiForm("Registrace čtenáře", f, 4, NULL))
+        return 0;
+    c.telefon = atoi(telefon);
 
-        if (findUser(name) != NULL) {
-            snprintf(err, sizeof err, "Uživatelské jméno už existuje");
-        }
-        else if (strlen(pass) < 4) {
-            snprintf(err, sizeof err, "Heslo musí mít alespoň 4 znaky");
-        }
-        else if (strcmp(pass, pass2) != 0) {
-            snprintf(err, sizeof err, "Hesla se neshodují");
-        }
-        else {
-            int id = registerReader ? registerReader(full) : gNextReaderId++;
-            if (id <= 0 || !uiAddUser(name, pass, ROLE_CTENAR, id)) {
-                snprintf(err, sizeof err, "Registrace se nezdařila");
-                continue;
-            }
-            setSession(s, findUser(name));
-
-            char msg[128];
-            snprintf(msg, sizeof msg, "Registrace proběhla úspěšně.\nVaše číslo čtenáře: %d", id);
-            uiSuccess(msg);
-            return 1;
-        }
-        pass[0] = '\0';
-        pass2[0] = '\0';
+    int id = pridej_ctenare(&c);
+    if (id <= 0) {
+        uiError("Registrace se nezdařila, evidence čtenářů je plná.");
+        return 0;
     }
+
+    overId(s, id);
+    snprintf(zprava, sizeof zprava,
+        "Registrace proběhla úspěšně.\n\nVaše ID: %d\nTímto ID se budete přihlašovat.", id);
+    uiSuccess(zprava);
+    return 1;
 }
 
-int uiLogin(Session* s, RegisterReaderFn registerReader)
+int uiLogin(Session* s)
 {
     static const char* options[] = { "Přihlásit se", "Registrovat se", "Ukončit program" };
     int sel = 0;
 
     s->role = ROLE_NONE;
-    s->readerId = -1;
-    s->username[0] = '\0';
+    s->id = 0;
+    s->jmeno[0] = '\0';
     gStatus[0] = '\0';
 
     for (;;) {
@@ -595,7 +568,7 @@ int uiLogin(Session* s, RegisterReaderFn registerReader)
 
         if (sel == 0 && loginScreen(s))
             return 1;
-        if (sel == 1 && registerScreen(s, registerReader))
+        if (sel == 1 && registerScreen(s))
             return 1;
         if (gEof)
             return 0;
@@ -658,10 +631,6 @@ void pridatKnihu(Session* s)
     int id = pridej_knihu(&k);
     if (id <= 0) {
         uiError("Evidence knih je plná.");
-        return;
-    }
-    if (!evidence_uloz()) {
-        uiError("Kniha přidána, ale nepodařilo se ji uložit do souboru.");
         return;
     }
 

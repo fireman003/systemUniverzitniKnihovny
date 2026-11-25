@@ -28,21 +28,7 @@ int uloz_knihy(Kniha pole_knih[], int pocet_knih, const char* nazev_souboru)
             pole_knih[i].datum_vydani.den,
             pole_knih[i].datum_vydani.mesic,
             pole_knih[i].datum_vydani.rok,
-            pole_knih[i].status,
-            pole_knih[i].Rezervovano_pro,
-            pole_knih[i].Rezervovano_pro_den.den,
-            pole_knih[i].Rezervovano_pro_den.mesic,
-            pole_knih[i].Rezervovano_pro_den.rok,
-            pole_knih[i].vypujceno,
-            pole_knih[i].vypujceno_od.den,
-            pole_knih[i].vypujceno_od.mesic,
-            pole_knih[i].vypujceno_od.rok,
-            pole_knih[i].vypujceno_do.den,
-            pole_knih[i].vypujceno_do.mesic,
-            pole_knih[i].vypujceno_do.rok
-
-
-
+            pole_knih[i].status
         );
     }
 

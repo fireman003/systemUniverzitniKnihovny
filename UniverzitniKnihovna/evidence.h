@@ -12,6 +12,12 @@ int evidence_uloz(void);
 extern Kniha knihy[MAX_KNIH];
 extern int   pocet_knih;
 
+extern Ctenar ctenari[MAX_CTENARU];
+extern int    pocet_ctenaru;
+
+int     pridej_ctenare(Ctenar* c);
+Ctenar* najdi_ctenare(int id);
+
 // Knihy
 const char* kontrola_knihy(const Kniha* k);     // NULL = OK, jinak text chyby
 int    pridej_knihu(Kniha* k);                  // vrací nové ID

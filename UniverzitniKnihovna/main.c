@@ -1,31 +1,25 @@
 #include <stdio.h>
-#include <stdlib.h>
-
 #include "ui.h"
-#include "evidence.h"
 
-//testovaci UI itemy
 static const MenuItem HLAVNI_MENU[] = {
-    { "Přidat knihu", pridatKnihu, ROLE_ALL },
-    { "Hledat knihu", hledatKnihu, ROLE_ALL }
+    { "Přehled všech knih",        NULL,        ROLE_SPRAVCE },
+    { "Přidat knihu",              pridatKnihu, ROLE_SPRAVCE | ROLE_KNIHOVNIK },
+    { "Hledat knihu",              hledatKnihu, ROLE_SPRAVCE | ROLE_KNIHOVNIK | ROLE_VEDOUCI },
+    { "Přidat čtenáře",            NULL,        ROLE_KNIHOVNIK },
+    { "Výpůjčky čtenáře",          NULL,        ROLE_KNIHOVNIK },
+    { "Přehled podle dostupnosti", NULL,        ROLE_VEDOUCI },
+    { "Moje výpůjčky",             NULL,        ROLE_CTENAR }
 };
 
-int main()
+int main(void)
 {
     Session s;
+
     uiInit();
 
-    if (!evidence_nacti()) {
-        uiError("Nepodařilo se načíst data.");
-    }
-        
-    //hlavni cyklus programu
-    while (uiLogin(&s, NULL)){
+    while (uiLogin(&s))
         uiRunMenu("Hlavní menu", HLAVNI_MENU, sizeof HLAVNI_MENU / sizeof HLAVNI_MENU[0],
             "Odhlásit se", &s);
-    }
-        
 
-    evidence_uloz();
     return 0;
 }

@@ -8,11 +8,17 @@ typedef struct
 	int mesic;
 	int rok;
 } Datum;
-
+/*
 typedef enum
 {
 	Rezervovano,
 	Nerezervovano
+} Rezervace;*/
+
+typedef struct
+{
+	int ID;
+	Datum Rezervovano_pro_den;
 } Rezervace;
 
 typedef enum
@@ -31,6 +37,13 @@ typedef struct
 	Datum datum_vydani;
 	Status status;
 } Kniha;
+
+typedef struct 
+{
+	int ID;
+	Datum vypujceno_od;
+	Datum vypujceno_do;
+} Vypujcka;
 
 typedef struct
 {
@@ -52,18 +65,7 @@ typedef struct
 	int telefon;
 } Knihovnik;
 
-typedef struct 
-{
-	int ID;
-	Datum vypujceno_od;
-	Datum vypujceno_do;
-} Vypujcka;
 
-typedef struct
-{
-	int ID;
-	Datum Rezervovano_pro_den;
-} Rezervace;
 
 int uloz_knihy(Kniha pole_knih[], int pocet_knih, const char* nazev_souboru);
 int nacti_knihovniky(Knihovnik pole_knihovniku[]);
