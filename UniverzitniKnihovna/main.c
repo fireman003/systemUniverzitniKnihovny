@@ -1,14 +1,12 @@
 #include <stdio.h>
+
 #include "ui.h"
+#include "obrazovky.h"
 
 static const MenuItem HLAVNI_MENU[] = {
-    { "Přehled všech knih",        NULL,        ROLE_SPRAVCE },
-    { "Přidat knihu",              pridatKnihu, ROLE_SPRAVCE | ROLE_KNIHOVNIK },
-    { "Hledat knihu",              hledatKnihu, ROLE_SPRAVCE | ROLE_KNIHOVNIK | ROLE_VEDOUCI },
-    { "Přidat čtenáře",            NULL,        ROLE_KNIHOVNIK },
-    { "Výpůjčky čtenáře",          NULL,        ROLE_KNIHOVNIK },
-    { "Přehled podle dostupnosti", NULL,        ROLE_VEDOUCI },
-    { "Moje výpůjčky",             NULL,        ROLE_CTENAR }
+    { "Přehled všech knih", prehledKnih, ROLE_SPRAVCE },
+    { "Přidat knihu",       pridatKnihu, ROLE_SPRAVCE | ROLE_KNIHOVNIK },
+    { "Hledat knihu",       hledatKnihu, ROLE_SPRAVCE | ROLE_KNIHOVNIK | ROLE_VEDOUCI }
 };
 
 int main(void)

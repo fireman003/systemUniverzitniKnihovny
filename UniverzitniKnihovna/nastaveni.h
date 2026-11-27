@@ -9,5 +9,7 @@
 #define ID_KNIHOVNIK      3
 #define PRVNI_ID_CTENARE  1000
 #define MAX_CTENARU       1000
+#define MAX_VYPUJCEK      2000
+#define DNU_VYPUJCKY      30
 
 #endif

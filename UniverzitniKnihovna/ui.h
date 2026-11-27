@@ -82,8 +82,6 @@ const char* uiRoleName(Role r);
 void uiRunMenu(const char* title, const MenuItem* items, size_t count,
     const char* backLabel, Session* s);
 
-
-void pridatKnihu(Session* s);
-void hledatKnihu(Session* s);
+int uiChoice(const char* title, const char* text, const char** options, int count);
 
 #endif

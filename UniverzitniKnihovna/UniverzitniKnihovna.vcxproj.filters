@@ -30,6 +30,7 @@
     <ClCompile Include="evidence.c">
       <Filter>src\logika</Filter>
     </ClCompile>
+    <ClCompile Include="obrazovky.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui.h">
@@ -46,6 +47,9 @@
     </ClInclude>
     <ClInclude Include="..\uloziste.h">
       <Filter>src\uloziste</Filter>
+    </ClInclude>
+    <ClInclude Include="obrazovky.h">
+      <Filter>src\UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

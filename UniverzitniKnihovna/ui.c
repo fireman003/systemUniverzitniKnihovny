@@ -612,52 +612,66 @@ void uiRunMenu(const char* title, const MenuItem* items, size_t count,
     }
 }
 
-void pridatKnihu(Session* s)
+int uiChoice(const char* title, const char* text, const char** options, int count)
 {
-    Kniha k = { 0 };
-    char rok[8] = "";
-    char zprava[100];
-    FormField pole[3] = {
-        { "Název",      k.nazev_knihy,  sizeof k.nazev_knihy,  FIELD_TEXT,   0 },
-        { "Autor",      k.nazev_autora, sizeof k.nazev_autora, FIELD_TEXT,   0 },
-        { "Rok vydání", rok,            sizeof rok,            FIELD_NUMBER, 0 }
-    };
-    (void)s;
+    int lines = 1, maxW = 0, cur = 0, sel = 0;
 
-    if (!uiForm("Nová kniha", pole, 3, NULL))
-        return;
-    k.datum_vydani.rok = atoi(rok);
-
-    int id = pridej_knihu(&k);
-    if (id <= 0) {
-        uiError("Evidence knih je plná.");
-        return;
+    for (const char* p = text; *p; p++) {
+        if (*p == '\n') {
+            lines++;
+            cur = 0;
+        }
+        else if (((unsigned char)*p & 0xC0) != 0x80 && ++cur > maxW) {
+            maxW = cur;
+        }
     }
 
-    snprintf(zprava, sizeof zprava, "Kniha uložena pod ID %d.", id);
-    uiSuccess(zprava);
-}
+    int w = maxW + 8;
+    for (int i = 0; i < count; i++)
+        if (textWidth(options[i]) + 12 > w)
+            w = textWidth(options[i]) + 12;
+    if (w < 40)
+        w = 40;
 
-void hledatKnihu(Session* s)
-{
-    char text[50];
-    Kniha* nalez[20];
-    (void)s;
+    Box b = drawBox(w, lines + count + 5, title);
 
-    if (!uiReadText("Název nebo autor", text, sizeof text, 0))
-        return;
-
-    int n = hledej_knihy(text, nalez, 20);
-    if (n == 0) {
-        uiMessage("Hledání", "Kniha nebyla nalezena.");
-        return;
+    const char* p = text;
+    for (int i = 0; i < lines; i++) {
+        char line[256];
+        const char* end = strchr(p, '\n');
+        size_t n = end ? (size_t)(end - p) : strlen(p);
+        if (n >= sizeof line)
+            n = sizeof line - 1;
+        memcpy(line, p, n);
+        line[n] = '\0';
+        gotoXY(b.x + 3, b.y + 2 + i);
+        printf("%s", line);
+        p = end ? end + 1 : p + n;
     }
+    boxHint(b, "↑↓ pohyb   Enter výběr   Esc zpět");
 
-    uiClear();
-    printf("  Nalezeno: %d\n\n", n);
-    for (int i = 0; i < n; i++)
-        printf("  %4d  %-30s %-20s %d  %s\n", nalez[i]->ID, nalez[i]->nazev_knihy,
-            nalez[i]->nazev_autora, nalez[i]->datum_vydani.rok,
-            nalez[i]->status == Vypujceno ? "vypůjčená" : "v knihovně");
-    uiPause();
+    for (;;) {
+        for (int i = 0; i < count; i++) {
+            gotoXY(b.x + 3, b.y + lines + 3 + i);
+            if (i == sel) {
+                printf(C_SELECT " ▸ %s", options[i]);
+                repeat(" ", w - 9 - textWidth(options[i]));
+                printf(C_RESET);
+            }
+            else {
+                printf("   %s", options[i]);
+                repeat(" ", w - 9 - textWidth(options[i]));
+            }
+        }
+
+        int k = uiGetKey();
+        if (k == KEY_UP)
+            sel = (sel + count - 1) % count;
+        else if (k == KEY_DOWN || k == KEY_TAB)
+            sel = (sel + 1) % count;
+        else if (k == KEY_ENTER)
+            return sel;
+        else if (k == KEY_ESC)
+            return -1;
+    }
 }

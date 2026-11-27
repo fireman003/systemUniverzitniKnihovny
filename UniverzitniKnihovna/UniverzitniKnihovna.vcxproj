@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="evidence.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="obrazovky.c" />
     <ClCompile Include="scene.c" />
     <ClCompile Include="ui.c" />
     <ClCompile Include="uloziste.c" />
@@ -137,6 +138,7 @@
     <ClInclude Include="..\uloziste.h" />
     <ClInclude Include="evidence.h" />
     <ClInclude Include="nastaveni.h" />
+    <ClInclude Include="obrazovky.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="ui.h" />
   </ItemGroup>
