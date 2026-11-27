@@ -19,3 +19,5 @@ Vývojový deník
 23.11. - Marek Havel - Oprava syntaktických chyb v projektu. Odebrání diakritiky z názvů ve strukturách. Přejmenování Header1.h na uloziste.h a doplnění deklarací metod. Vytvoření nastaveni.h pro #define (název souboru knih, max. počet knih). Základní logika v mainu, program se poprvé spustí.
 
 25.11. - Marek Havel - Přihlášení podle UML přes ID.
+
+27.11. - Marek Havel - Obrazovky pro knihy: přehled, přidání, hledání, detail, úprava a smazání. Nový soubor obrazovky.c/h a funkce uiChoice pro detail s výběrem akcí.
